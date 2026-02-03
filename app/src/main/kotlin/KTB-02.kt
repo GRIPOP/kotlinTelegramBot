@@ -3,13 +3,17 @@ package org.example.app
 import java.io.File
 
 fun main() {
-    val wordsFile: File = File("words.txt")
+    val dictionary: MutableList<Word> = mutableListOf()
+    val wordsFile = File("words.txt")
+    val lines: List<String> = wordsFile.readLines()
 
-    try {
-        wordsFile.readLines().forEach {
-            println(it)
+    for (line in lines) {
+        val parts = line.split("|")
+        if (parts.size >= 3) {
+            val word = Word(original = parts[0], translate = parts[1], correctAnswersCount = parts[2].toIntOrNull() ?: 0)
+            dictionary.add(word)
         }
-    } catch (e: java.io.FileNotFoundException) {
-        println("Файл отсутствует. Необходимо создать файл со словами.")
     }
+
+    println(dictionary)
 }
