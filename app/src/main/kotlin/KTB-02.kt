@@ -3,6 +3,20 @@ package org.example.app
 import java.io.File
 
 fun main() {
+    val dictionary = loadDictionary()
+
+    while (true) {
+        println("1 - Учить слова \n2 - Статистика\n0 - Выход")
+        when (readln()) {
+            "1" -> println("Учить слова")
+            "2" -> println("Статистика")
+            "0" -> return
+            else -> println("Введите число 1, 2 или 0")
+        }
+    }
+}
+
+fun loadDictionary(): List<Word> {
     val dictionary: MutableList<Word> = mutableListOf()
     val wordsFile = File("words.txt")
     val lines: List<String> = wordsFile.readLines()
@@ -14,6 +28,5 @@ fun main() {
             dictionary.add(word)
         }
     }
-
-    println(dictionary)
+    return dictionary
 }
