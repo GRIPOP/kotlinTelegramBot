@@ -9,7 +9,13 @@ fun main() {
         println("1 - Учить слова \n2 - Статистика\n0 - Выход")
         when (readln()) {
             "1" -> println("Учить слова")
-            "2" -> println("Статистика")
+            "2" -> {
+                val numbersWord = dictionary.count()
+                val learningWords = dictionary.count { it.correctAnswersCount >= 3 }
+                val percent = (learningWords.toDouble() / numbersWord * 100).toInt()
+                println("Выучено $learningWords из $numbersWord слов | $percent%\n")
+            }
+
             "0" -> return
             else -> println("Введите число 1, 2 или 0")
         }
@@ -24,7 +30,8 @@ fun loadDictionary(): List<Word> {
     for (line in lines) {
         val parts = line.split("|")
         if (parts.size >= 3) {
-            val word = Word(original = parts[0], translate = parts[1], correctAnswersCount = parts[2].toIntOrNull() ?: 0)
+            val word =
+                Word(original = parts[0], translate = parts[1], correctAnswersCount = parts[2].toIntOrNull() ?: 0)
             dictionary.add(word)
         }
     }
