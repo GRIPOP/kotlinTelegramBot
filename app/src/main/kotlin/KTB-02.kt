@@ -3,6 +3,7 @@ package org.example.app
 import java.io.File
 
 const val CRITERIA_LEARNED_WORD = 3
+const val NUMBER_OF_WORD_TRANSLATIONS = 4
 
 fun main() {
     val dictionary = loadDictionary()
@@ -11,33 +12,34 @@ fun main() {
         println("1 - Учить слова \n2 - Статистика\n0 - Выход")
         when (readln()) {
             "1" -> {
-                val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
-                if (notLearnedList.isEmpty()) {
-                    println("Все слова в словаре выучены")
-                    break
-                } else {
-                    if (notLearnedList.size >= 4) {
-                        val questionWords = notLearnedList.take(4)
-                        for (word in questionWords) {
-                            val shuffledWords = questionWords.shuffled()
-                            val correctAnswer = word.translate
-                            println("\n${word.original}:")
-                            println(
-                                """
-                            |  1 - ${shuffledWords[0].translate}
-                            |  2 - ${shuffledWords[1].translate}
-                            |  3 - ${shuffledWords[2].translate}
-                            |  4 - ${shuffledWords[3].translate}
-                        """.trimMargin()
-                            )
-                            val userTranslate = readln().lowercase()
+                while (true) {
+                    val learnedWord = dictionary.filter { it.correctAnswersCount >= CRITERIA_LEARNED_WORD }
+                    val notLearnedList = dictionary.filter { it.correctAnswersCount < CRITERIA_LEARNED_WORD }
+                    if (notLearnedList.isNotEmpty()) {
+                        val questionWords = if (notLearnedList.size > NUMBER_OF_WORD_TRANSLATIONS) {
+                            notLearnedList.shuffled().take(NUMBER_OF_WORD_TRANSLATIONS)
+                        } else {
+                            (notLearnedList.take(NUMBER_OF_WORD_TRANSLATIONS) + learnedWord.takeLast(
+                                NUMBER_OF_WORD_TRANSLATIONS - notLearnedList.size
+                            )).shuffled()
                         }
+                        val wordForTranslate = questionWords.random()
+                        println("\n${wordForTranslate.original}:")
+                        val correctAnswers = wordForTranslate.translate
+                        println(
+                            """
+                            |  1 - ${questionWords[0].translate}
+                            |  2 - ${questionWords[1].translate}
+                            |  3 - ${questionWords[2].translate}
+                            |  4 - ${questionWords[3].translate}
+                        """.trimMargin()
+                        )
+                        val userTranslate = readln()
                     } else {
-                        println("Невыученных слов меньше 4")
+                        println("Все слова в словаре выучены")
                         break
                     }
                 }
-
             }
 
             "2" -> {
@@ -51,8 +53,13 @@ fun main() {
                 }
             }
 
-            "0" -> return
-            else -> println("Введите число 1, 2 или 0")
+            "0" -> {
+                return
+            }
+
+            else -> {
+                println("Введите число 1, 2 или 0")
+            }
         }
     }
 }
