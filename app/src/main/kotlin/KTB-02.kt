@@ -15,13 +15,13 @@ fun main() {
                 while (true) {
                     val learnedWord = dictionary.filter { it.correctAnswersCount >= CRITERIA_LEARNED_WORD }
                     val notLearnedList = dictionary.filter { it.correctAnswersCount < CRITERIA_LEARNED_WORD }
+                    val fromNotLearned = notLearnedList.shuffled()
+                    val fromLearned = learnedWord.shuffled()
                     if (notLearnedList.isNotEmpty()) {
-                        val questionWords = if (notLearnedList.size > NUMBER_OF_WORD_TRANSLATIONS) {
+                        val questionWords = if (notLearnedList.size >= NUMBER_OF_WORD_TRANSLATIONS) {
                             notLearnedList.shuffled().take(NUMBER_OF_WORD_TRANSLATIONS)
                         } else {
-                            (notLearnedList.take(NUMBER_OF_WORD_TRANSLATIONS) + learnedWord.takeLast(
-                                NUMBER_OF_WORD_TRANSLATIONS - notLearnedList.size
-                            )).shuffled()
+                            (fromNotLearned + fromLearned).take(NUMBER_OF_WORD_TRANSLATIONS)
                         }
                         val wordForTranslate = questionWords.random()
                         println("\n${wordForTranslate.original}:")
