@@ -23,18 +23,29 @@ fun main() {
                         } else {
                             (fromNotLearned + fromLearned).take(NUMBER_OF_WORD_TRANSLATIONS)
                         }
-                        val wordForTranslate = questionWords.random()
+                        val wordForTranslate = notLearnedList.random()
                         println("\n${wordForTranslate.original}:")
-                        val correctAnswers = wordForTranslate.translate
                         println(
                             """
                             |  1 - ${questionWords[0].translate}
                             |  2 - ${questionWords[1].translate}
                             |  3 - ${questionWords[2].translate}
                             |  4 - ${questionWords[3].translate}
+                            |  -------------
+                            |  0 - Меню
                         """.trimMargin()
                         )
-                        val userTranslate = readln()
+                        val userAnswerInput = readln().toInt()
+                        val correctAnswerId = questionWords.indexOf(wordForTranslate) + 1
+                        if (userAnswerInput == 0) {
+                            break
+                        } else if (userAnswerInput == correctAnswerId) {
+                            println("Правильно!")
+                            dictionary.find { it == wordForTranslate }?.correctAnswersCount += 1
+                            saveDictionary(dictionary)
+                        } else {
+                            println("Неправильно! ${wordForTranslate.original} – это ${wordForTranslate.translate}")
+                        }
                     } else {
                         println("Все слова в словаре выучены")
                         break
@@ -78,4 +89,11 @@ fun loadDictionary(): List<Word> {
         }
     }
     return dictionary
+}
+
+fun saveDictionary(dictionary: List<Word>) {
+    val wordsFile = File("words.txt")
+
+    wordsFile.writeText(
+        dictionary.joinToString("\n") { word -> "${word.original}|${word.translate}|${word.correctAnswersCount}" })
 }
