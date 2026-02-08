@@ -9,7 +9,6 @@ fun Question.asConsoleString(): String {
     return "\n" + this.correctAnswer.original + ":" + "\n" + variants + "\n" + "-----------\n 0 - меню"
 }
 
-
 fun main() {
     val trainer = LearnWordsTrainer()
     while (true) {
@@ -40,7 +39,7 @@ fun main() {
                 println("Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n")
             }
 
-            3 -> {
+            0 -> {
                 return
             }
 

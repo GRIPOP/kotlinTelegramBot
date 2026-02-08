@@ -36,7 +36,7 @@ class LearnWordsTrainer {
         } else {
             (fromNotLearned + fromLearned).take(NUMBER_OF_WORD_TRANSLATIONS)
         }
-        val correctAnswer = questionWords.random()
+        val correctAnswer = notLearnedList.random()
 
         question = Question(
             variants = questionWords,
