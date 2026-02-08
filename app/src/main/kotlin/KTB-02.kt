@@ -25,17 +25,9 @@ fun main() {
                         }
                         val wordForTranslate = notLearnedList.random()
                         println("\n${wordForTranslate.original}:")
-                        println(
-                            """
-                            |  1 - ${questionWords[0].translate}
-                            |  2 - ${questionWords[1].translate}
-                            |  3 - ${questionWords[2].translate}
-                            |  4 - ${questionWords[3].translate}
-                            |  -------------
-                            |  0 - Меню
-                        """.trimMargin()
-                        )
-                        val userAnswerInput = readln().toInt()
+                        questionWords.forEachIndexed { index, word -> println("${index + 1} - ${word.translate}") }
+                        println("-----------\n0 - меню")
+                        val userAnswerInput = readln().toIntOrNull()
                         val correctAnswerId = questionWords.indexOf(wordForTranslate) + 1
                         if (userAnswerInput == 0) {
                             break
