@@ -1,8 +1,5 @@
 package org.example.app
 
-const val CRITERIA_LEARNED_WORD = 3
-const val NUMBER_OF_WORD_TRANSLATIONS = 4
-
 fun Question.asConsoleString(): String {
     val variants = this.variants.mapIndexed { index: Int, word: Word -> " ${index + 1} - ${word.translate}" }
         .joinToString(separator = "\n")
@@ -10,7 +7,14 @@ fun Question.asConsoleString(): String {
 }
 
 fun main() {
-    val trainer = LearnWordsTrainer()
+
+    val trainer = try {
+        LearnWordsTrainer(3, 4)
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь")
+        return
+    }
+
     while (true) {
         println("1 - Учить слова \n2 - Статистика\n0 - Выход")
         when (readln().toIntOrNull()) {
@@ -39,9 +43,7 @@ fun main() {
                 println("Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n")
             }
 
-            0 -> {
-                return
-            }
+            0 -> return
 
             else -> {
                 println("Введите число 1, 2 или 0")
