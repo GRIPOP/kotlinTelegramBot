@@ -11,7 +11,6 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     var updateId = 0
 
-
     while (true) {
         Thread.sleep(2000)
         val updates: String = getUpdates(botToken, updateId)
@@ -24,7 +23,6 @@ fun main(args: Array<String>) {
         val updateIString = updates.substring(startUpdateId + 11, endUpdateId)
         println(updateIString)
         updateId = updateIString.toInt() + 1
-
     }
 }
 
