@@ -23,6 +23,13 @@ fun main(args: Array<String>) {
         val updateIString = updates.substring(startUpdateId + 11, endUpdateId)
         println(updateIString)
         updateId = updateIString.toInt() + 1
+
+        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+        val matchResult = messageTextRegex.find(updates)
+        val groups = matchResult?.groups
+        println(groups)
+        val text = groups?.get(1)?.value
+        println(text)
     }
 }
 
