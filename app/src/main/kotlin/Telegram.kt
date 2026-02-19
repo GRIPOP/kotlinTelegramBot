@@ -23,11 +23,11 @@ fun main(args: Array<String>) {
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong()
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
 
-        if (message?.lowercase() == "hello" && chatId != null) {
+        if (message?.lowercase() == GREETING && chatId != null) {
             telegramBotService.sendMessage(chatId, message)
         }
 
-        if (message == "/start" && chatId != null) {
+        if (message?.lowercase() == MENU && chatId != null) {
             telegramBotService.sendMenu(chatId)
         }
 
