@@ -31,12 +31,13 @@ fun main(args: Array<String>) {
             telegramBotService.sendMenu(chatId)
         }
 
-        if (data?.lowercase() == LEARNING_WORDS && chatId != null) {
+        if (data?.lowercase() == STATISTICS && chatId != null) {
+            val infoStatistics = trainer.getStatistics()
             telegramBotService.sendMessage(
                 chatId,
-                "Выучено ${trainer.getStatistics().learnedCount} " +
-                        "из ${trainer.getStatistics().totalCount} слов | " +
-                        "${trainer.getStatistics().percent}%\n"
+                "Выучено ${infoStatistics.learnedCount} " +
+                        "из ${infoStatistics.totalCount} слов | " +
+                        "${infoStatistics.percent}%\n"
             )
         }
     }
