@@ -1,39 +1,38 @@
 package org.example.app
 
-const val TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
-
 fun main(args: Array<String>) {
     val botToken = args[0]
-    var updateId = 0
     val updateIdRegex: Regex = "\"update_id\":(\\d+)".toRegex()
     val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
     val chatIdRegex: Regex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
+    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
+    var lastUpdateId = 0
     val telegramBotService = TelegramBotService(botToken)
+    val trainer = LearnWordsTrainer()
 
     while (true) {
-        Thread.sleep(1000)
-        val updates: String = telegramBotService.getUpdates(updateId)
+        Thread.sleep(2000)
+        val updates: String = telegramBotService.getUpdates(lastUpdateId)
 
         println(updates)
 
-        val updateIdMatch = updateIdRegex.find(updates) ?: continue
-        val groupUpdateId = updateIdMatch.groups
-        val updateIdValue = groupUpdateId[1]?.value
-        if (updateIdValue != null) {
-            updateId = updateIdValue.toInt() + 1
-        } else {
-            println("update_id is empty")
-            updateId = 0
+        val updateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+        lastUpdateId = updateId + 1
+
+        val message = messageTextRegex.find(updates)?.groups?.get(1)?.value
+        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong()
+        val data = dataRegex.find(updates)?.groups?.get(1)?.value
+
+        if (message?.lowercase() == GREETING && chatId != null) {
+            telegramBotService.sendMessage(chatId, message)
         }
 
-        val messageTextMatch = messageTextRegex.find(updates) ?: continue
-        val groups = messageTextMatch.groups
-        val text = groups[1]?.value
+        if (message?.lowercase() == MENU && chatId != null) {
+            telegramBotService.sendMenu(chatId)
+        }
 
-        val chatIdMatch = chatIdRegex.find(updates) ?: continue
-        val groupChatId = chatIdMatch.groups
-        val chatIdValue = groupChatId[1]?.value?.toInt()
-
-        telegramBotService.sendMessage(chatIdValue, text)
+        if (data?.lowercase() == "statistics_clicked" && chatId != null) {
+            telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов 100%")
+        }
     }
 }
