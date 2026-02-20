@@ -31,8 +31,14 @@ fun main(args: Array<String>) {
             telegramBotService.sendMenu(chatId)
         }
 
-        if (data?.lowercase() == "statistics_clicked" && chatId != null) {
-            telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов 100%")
+        if (data?.lowercase() == STATISTICS && chatId != null) {
+            val infoStatistics = trainer.getStatistics()
+            telegramBotService.sendMessage(
+                chatId,
+                "Выучено ${infoStatistics.learnedCount} " +
+                        "из ${infoStatistics.totalCount} слов | " +
+                        "${infoStatistics.percent}%\n"
+            )
         }
     }
 }
