@@ -63,4 +63,59 @@ class TelegramBotService(private val botToken: String) {
             client.send(requestSendMessage, HttpResponse.BodyHandlers.ofString())
         return responseSendMessage.body()
     }
+
+    fun sendQuestion(chatId: Long?, question: Question?): String? {
+        val urlSendQuestion = "$TELEGRAM_BASE_URL$botToken/sendMessage"
+        val sendVariantsAnswers = """
+        {
+            "chat_id": "$chatId",
+            "text": "${question?.correctAnswer?.original}",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "${question?.variants[0]?.translate}",
+                            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX + 0}"
+                        },
+                        {
+                            "text": "${question?.variants[1]?.translate}",
+                            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX + 1}"
+                        }
+                    ],
+                    [
+                        {
+                            "text": "${question?.variants[2]?.translate}",
+                            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX + 2}"
+                        },
+                        {
+                            "text": "${question?.variants[3]?.translate}",
+                            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX + 3}"
+                        }
+                    ]
+                ]
+            }
+        }
+    """.trimIndent()
+
+        val requestSendQuestion: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendQuestion))
+            .POST(HttpRequest.BodyPublishers.ofString(sendVariantsAnswers))
+            .header("Content-Type", "application/json")
+            .build()
+        val responseSendQuestion: HttpResponse<String> =
+            client.send(requestSendQuestion, HttpResponse.BodyHandlers.ofString())
+        return responseSendQuestion.body()
+    }
+
+    fun checkQuestionAndSend(
+        trainer: LearnWordsTrainer,
+        telegramBotService: TelegramBotService,
+        chatId: Long?,
+    ): String? {
+        val nextQuestion = trainer.getNextQuestion()
+        return if (nextQuestion == null) {
+            "Все слова в словаре выучены"
+        } else {
+            telegramBotService.sendQuestion(chatId, nextQuestion)
+        }
+    }
 }
