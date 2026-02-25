@@ -47,7 +47,6 @@ fun main(args: Array<String>) {
     }
 }
 
-
 fun checkQuestionAndSend(
     trainer: LearnWordsTrainer,
     telegramBotService: TelegramBotService,
@@ -57,7 +56,6 @@ fun checkQuestionAndSend(
     return if (nextQuestion == null) {
         telegramBotService.sendMessage(chatId, "Все слова выучены")
     } else {
-
         telegramBotService.sendQuestion(chatId, nextQuestion)
     }
 }
