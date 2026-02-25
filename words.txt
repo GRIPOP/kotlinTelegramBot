@@ -7,7 +7,7 @@ lemon|лимон|3
 red|красный|1
 white|белый|1
 moon|луна|3
-night|ночь|1
+night|ночь|3
 green|зеленый|4
 table|стол|3
 chair|стул|3

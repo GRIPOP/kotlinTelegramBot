@@ -42,7 +42,22 @@ fun main(args: Array<String>) {
         }
 
         if (data == LEARNING_WORDS && chatId != null) {
-            telegramBotService.checkQuestionAndSend(trainer, telegramBotService, chatId)
+            checkQuestionAndSend(trainer, telegramBotService, chatId)
         }
+    }
+}
+
+
+fun checkQuestionAndSend(
+    trainer: LearnWordsTrainer,
+    telegramBotService: TelegramBotService,
+    chatId: Long?,
+): String? {
+    val nextQuestion = trainer.getNextQuestion()
+    return if (nextQuestion == null) {
+        telegramBotService.sendMessage(chatId, "Все слова выучены")
+    } else {
+
+        telegramBotService.sendQuestion(chatId, nextQuestion)
     }
 }
