@@ -2,13 +2,13 @@ hello|привет|3
 dog|собака|4
 cat|кошка|4
 thank you|спасибо|5
-glass|стекло|4
-lemon|лимон|3
+glass|стекло|1
+lemon|лимон|2
 red|красный|1
-white|белый|1
-moon|луна|3
-night|ночь|3
+white|белый|3
+moon|луна|2
+night|ночь|1
 green|зеленый|4
-table|стол|3
-chair|стул|3
+table|стол|2
+chair|стул|1
 phone|телефон|3
