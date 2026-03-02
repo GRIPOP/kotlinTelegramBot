@@ -44,6 +44,19 @@ fun main(args: Array<String>) {
         if (data == LEARNING_WORDS && chatId != null) {
             checkQuestionAndSend(trainer, telegramBotService, chatId)
         }
+
+        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
+            val index = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+            if (trainer.checkAnswer(index)) {
+                telegramBotService.sendMessage(chatId, "Правильно")
+            } else {
+                telegramBotService.sendMessage(
+                    chatId,
+                    "Неправильно! ${trainer.question?.correctAnswer?.original} - это ${trainer.question?.correctAnswer?.translate}"
+                )
+            }
+            checkQuestionAndSend(trainer, telegramBotService, chatId)
+        }
     }
 }
 
