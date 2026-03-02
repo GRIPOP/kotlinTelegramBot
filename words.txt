@@ -9,6 +9,6 @@ white|белый|3
 moon|луна|2
 night|ночь|1
 green|зеленый|4
-table|стол|2
+table|стол|3
 chair|стул|1
 phone|телефон|3
