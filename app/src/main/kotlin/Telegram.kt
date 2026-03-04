@@ -12,7 +12,6 @@ data class Update(
     val message: Message? = null,
     @SerialName("callback_query")
     val callBackQuery: CallBackQuery? = null,
-
     )
 
 @Serializable
@@ -65,7 +64,6 @@ data class InlineKeyboard(
     val text: String,
     @SerialName("callback_data")
     val callbackData: String,
-
     )
 
 fun main(args: Array<String>) {
