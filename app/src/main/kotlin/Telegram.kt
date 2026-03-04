@@ -12,7 +12,7 @@ data class Update(
     val message: Message? = null,
     @SerialName("callback_query")
     val callBackQuery: CallBackQuery? = null,
-    )
+)
 
 @Serializable
 data class Response(
@@ -23,7 +23,7 @@ data class Response(
 @Serializable
 data class Message(
     @SerialName("text")
-    val text: String,
+    val text: String = "",
     @SerialName("chat")
     val chat: Chat,
 )
@@ -64,17 +64,15 @@ data class InlineKeyboard(
     val text: String,
     @SerialName("callback_data")
     val callbackData: String,
-    )
+)
 
 fun main(args: Array<String>) {
 
-    val json = Json {
-        ignoreUnknownKeys = true
-    }
-
+    val json = Json { ignoreUnknownKeys = true }
     val botToken = args[0]
     var lastUpdateId = 0L
     val telegramBotService = TelegramBotService(botToken)
+    val trainers = HashMap<Long, LearnWordsTrainer>()
     val trainer = LearnWordsTrainer()
 
     while (true) {
@@ -82,52 +80,69 @@ fun main(args: Array<String>) {
         val responseString: String = telegramBotService.getUpdates(lastUpdateId)
         println(responseString)
         val response: Response = json.decodeFromString(responseString)
-        val updates = response.result
-        val firstUpdate = updates.firstOrNull() ?: continue
-        val updateId = firstUpdate.updateId
-        lastUpdateId = updateId + 1
+        if (response.result.isEmpty()) continue
+        val sortedUpdates = response.result.sortedBy { it.updateId }
+        sortedUpdates.forEach { handleUpdate(it, json, botToken, telegramBotService, trainer, trainers) }
+        lastUpdateId = sortedUpdates.last().updateId + 1
 
+    }
+}
 
-        val message = firstUpdate.message?.text
-        val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callBackQuery?.message?.chat?.id
-        val data = firstUpdate.callBackQuery?.data
+fun handleUpdate(
+    update: Update,
+    json: Json,
+    botToken: String,
+    telegramBotService: TelegramBotService,
+    trainer: LearnWordsTrainer,
+    trainers: HashMap<Long, LearnWordsTrainer>,
+) {
 
-        if (message?.lowercase() == GREETING && chatId != null) {
-            telegramBotService.sendMessage(json, chatId, message)
-        }
+    val message = update.message?.text
+    val chatId = update.message?.chat?.id ?: update.callBackQuery?.message?.chat?.id ?: return
+    val data = update.callBackQuery?.data
 
-        if (message?.lowercase() == MENU && chatId != null) {
-            telegramBotService.sendMenu(json, chatId)
-        }
+    val trainer = trainers.getOrPut(chatId) { LearnWordsTrainer("$chatId.txt") }
 
-        if (data == STATISTICS_CLICKED && chatId != null) {
-            val infoStatistics = trainer.getStatistics()
+    if (message?.lowercase() == GREETING) {
+        telegramBotService.sendMessage(json, chatId, message)
+    }
+
+    if (message?.lowercase() == MENU) {
+        telegramBotService.sendMenu(json, chatId)
+    }
+
+    if (data == STATISTICS_CLICKED) {
+        val infoStatistics = trainer.getStatistics()
+        telegramBotService.sendMessage(
+            json,
+            chatId,
+            "Выучено ${infoStatistics.learnedCount} " +
+                    "из ${infoStatistics.totalCount} слов | " +
+                    "${infoStatistics.percent}%\n"
+        )
+    }
+
+    if (data == LEARNING_WORDS_CLICKED) {
+        checkQuestionAndSend(json, trainer, telegramBotService, chatId)
+    }
+
+    if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
+        val index = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+        if (trainer.checkAnswer(index)) {
+            telegramBotService.sendMessage(json, chatId, "Правильно")
+        } else {
             telegramBotService.sendMessage(
                 json,
                 chatId,
-                "Выучено ${infoStatistics.learnedCount} " +
-                        "из ${infoStatistics.totalCount} слов | " +
-                        "${infoStatistics.percent}%\n"
+                "Неправильно! ${trainer.question?.correctAnswer?.original} - это ${trainer.question?.correctAnswer?.translate}"
             )
         }
+        checkQuestionAndSend(json, trainer, telegramBotService, chatId)
+    }
 
-        if (data == LEARNING_WORDS_CLICKED && chatId != null) {
-            checkQuestionAndSend(json, trainer, telegramBotService, chatId)
-        }
-
-        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
-            val index = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
-            if (trainer.checkAnswer(index)) {
-                telegramBotService.sendMessage(json, chatId, "Правильно")
-            } else {
-                telegramBotService.sendMessage(
-                    json,
-                    chatId,
-                    "Неправильно! ${trainer.question?.correctAnswer?.original} - это ${trainer.question?.correctAnswer?.translate}"
-                )
-            }
-            checkQuestionAndSend(json, trainer, telegramBotService, chatId)
-        }
+    if (data == RESET_CLICkED) {
+        trainer.resetProgress()
+        telegramBotService.sendMessage(json, chatId, "Прогресс сброшен")
     }
 }
 
