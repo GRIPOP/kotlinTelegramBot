@@ -45,7 +45,7 @@ class TelegramBotService(private val botToken: String) {
                         InlineKeyboard(text = "Статистика", callbackData = STATISTICS_CLICKED)
                     ),
                     listOf(
-                        InlineKeyboard("Сбросить прогресс", RESET_CLICkED)
+                        InlineKeyboard("Сбросить прогресс", RESET_CLICKED)
                     )
                 )
             )

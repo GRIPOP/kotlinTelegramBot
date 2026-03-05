@@ -73,7 +73,6 @@ fun main(args: Array<String>) {
     var lastUpdateId = 0L
     val telegramBotService = TelegramBotService(botToken)
     val trainers = HashMap<Long, LearnWordsTrainer>()
-    val trainer = LearnWordsTrainer()
 
     while (true) {
         Thread.sleep(2000)
@@ -82,7 +81,7 @@ fun main(args: Array<String>) {
         val response: Response = json.decodeFromString(responseString)
         if (response.result.isEmpty()) continue
         val sortedUpdates = response.result.sortedBy { it.updateId }
-        sortedUpdates.forEach { handleUpdate(it, json, botToken, telegramBotService, trainer, trainers) }
+        sortedUpdates.forEach { handleUpdate(it, json, telegramBotService, trainers) }
         lastUpdateId = sortedUpdates.last().updateId + 1
 
     }
@@ -91,9 +90,7 @@ fun main(args: Array<String>) {
 fun handleUpdate(
     update: Update,
     json: Json,
-    botToken: String,
     telegramBotService: TelegramBotService,
-    trainer: LearnWordsTrainer,
     trainers: HashMap<Long, LearnWordsTrainer>,
 ) {
 
@@ -140,7 +137,7 @@ fun handleUpdate(
         checkQuestionAndSend(json, trainer, telegramBotService, chatId)
     }
 
-    if (data == RESET_CLICkED) {
+    if (data == RESET_CLICKED) {
         trainer.resetProgress()
         telegramBotService.sendMessage(json, chatId, "Прогресс сброшен")
     }
