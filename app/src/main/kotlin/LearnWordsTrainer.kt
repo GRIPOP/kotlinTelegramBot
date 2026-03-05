@@ -19,7 +19,11 @@ data class Word(
     var correctAnswersCount: Int = 0,
 )
 
-class LearnWordsTrainer(private val criteriaLearnedWord: Int = 3, private val numberOfWordTranslations: Int = 4) {
+class LearnWordsTrainer(
+    private val fileName: String = "words.txt",
+    private val criteriaLearnedWord: Int = 3,
+    private val numberOfWordTranslations: Int = 4,
+    ) {
     var question: Question? = null
     private val dictionary = loadDictionary()
 
@@ -56,7 +60,7 @@ class LearnWordsTrainer(private val criteriaLearnedWord: Int = 3, private val nu
             val correctAnswerId = it.variants.indexOf(it.correctAnswer)
             if (userCorrectAnswer == correctAnswerId) {
                 it.correctAnswer.correctAnswersCount++
-                saveDictionary(dictionary)
+                saveDictionary()
                 return true
             } else {
                 return false
@@ -66,8 +70,12 @@ class LearnWordsTrainer(private val criteriaLearnedWord: Int = 3, private val nu
 
     private fun loadDictionary(): List<Word> {
         try {
+            val wordsFile = File(fileName)
+            if (!wordsFile.exists()) {
+                File("words.txt").copyTo(wordsFile)
+            }
+
             val dictionary: MutableList<Word> = mutableListOf()
-            val wordsFile = File("words.txt")
             wordsFile.readLines().forEach {
                 val splitLine = it.split("|")
                 dictionary.add(Word(splitLine[0], splitLine[1], splitLine[2].toIntOrNull() ?: 0))
@@ -78,10 +86,15 @@ class LearnWordsTrainer(private val criteriaLearnedWord: Int = 3, private val nu
         }
     }
 
-    private fun saveDictionary(dictionary: List<Word>) {
-        val wordsFile = File("words.txt")
+    private fun saveDictionary() {
+        val wordsFile = File(fileName)
 
         wordsFile.writeText(
             dictionary.joinToString("\n") { word -> "${word.original}|${word.translate}|${word.correctAnswersCount}" })
+    }
+
+    fun resetProgress() {
+        dictionary.forEach { it.correctAnswersCount = 0 }
+        saveDictionary()
     }
 }
