@@ -3,6 +3,7 @@ plugins {
     // The shared code is located in `buildSrc/src/main/kotlin/kotlin-jvm.gradle.kts`.
     id("buildsrc.convention.kotlin-jvm")
     kotlin("plugin.serialization") version "2.3.10"
+    id("com.github.johnrengelman.shadow") version "8.3.0"
 
     // Apply the Application plugin to add support for building an executable JVM application.
     application
