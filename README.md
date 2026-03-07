@@ -1,23 +1,24 @@
-# KotlinTelegramBot
-
-This project uses [Gradle](https://gradle.org/).
-To build and run the application, use the *Gradle* tool window by clicking the Gradle icon in the right-hand toolbar,
-or run it directly from the terminal:
-
-* Run `./gradlew run` to build and run the application.
-* Run `./gradlew build` to only build the application.
-* Run `./gradlew check` to run all checks, including tests.
-* Run `./gradlew clean` to clean all build outputs.
-
-Note the usage of the Gradle Wrapper (`./gradlew`).
-This is the suggested way to use Gradle in production projects.
-
-[Learn more about the Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
-
-[Learn more about Gradle tasks](https://docs.gradle.org/current/userguide/command_line_interface.html#common_tasks).
-
-This project follows the suggested multi-module setup and consists of the `app` and `utils` subprojects.
-The shared build logic was extracted to a convention plugin located in `buildSrc`.
-
-This project uses a version catalog (see `gradle/libs.versions.toml`) to declare and version dependencies
-and both a build cache and a configuration cache (see `gradle.properties`).
+# English Learning Bot
+Бот для изучения английских слов.
+Слова размещаются в файле words.txt, в формате:
+английское слово| перевод/0.
+Каждая строка соответствует изучаемому слову.
+При запуске бота новым пользователем, файл words.txt копируется с именем "id_чата_пользователя. txt'
+## Публикация
+Для публикации бота на VPS воспользуемся утилитой scp, для запуска - ssh.
+### Настройка VPS
+1. Создать виртуальный сервер (Ubuntu), i получить: ір-адрес, пароль для root пользователя
+2. Подключиться к серверу по SSH используя команду 'ssh root@95.163.220.253' и введя пароль
+3. Обновить установленные пакеты командами 'apt update' n 'apt upgrade"
+4. Устанавливаем JDK командой 'apt install default-jdk"
+5. ### Публикация и запуск
+Соберем shadowJar командой /gradlew shadowJar"
+2. Копируем jar на наш VPS переименуя его одновременно в bot. jar: 'scp app/build/libs/app-all.jar 8276801293:AAH5PMi7iu3ABGoVBK8tkV3yEhyo-9qz5fQ root@95.163.220.253:/root/bot.jar'
+3. Копируем words.txt на VPS: scp words.txt root@95.163.220.253:/root/words.txt
+4. Подключиться к серверу по SSH используя команду 'ssh root@95.163.220.253" и введя пароль Запустить бота в фоне командой 'nohup java -jar bot.jar 8276801293:AAH5PMi7iu3ABGoVBK8tkV3yEhyo-9qz5fQ &
+6. Проверить работу бота
+## Принцип
+- KISS
+- DRY
+- Единство ответственности
+- Избегание преждевременной оптимизации
